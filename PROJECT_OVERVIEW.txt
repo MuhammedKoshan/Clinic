@@ -1,0 +1,168 @@
+KOSHAN CLINIC PROJECT OVERVIEW
+================================
+
+Project Name
+------------
+Koshan Clinic - Dr. Muhammed Kosan
+
+Project Description
+-------------------
+Koshan Clinic is a Turkish dermatology and medical aesthetics website for Dr. Muhammed Kosan. The project includes a public clinic website and a private doctor dashboard for managing appointments and availability.
+
+Public Website
+--------------
+The public website includes:
+
+- Clinic introduction and doctor profile
+- Dermatology and medical aesthetics services
+- Clinic contact information
+- WhatsApp contact button
+- Appointment booking section
+- Turkish full-name validation
+- Email validation
+- Turkish phone-number validation
+- Doctor-controlled appointment dates
+- Calendar displaying only doctor-approved available dates
+- Appointment time selection
+- Prevention of duplicate bookings for the same date and time
+- Appointment data stored in Supabase
+
+Available Appointment Times
+---------------------------
+Patients can select one of the following appointment times:
+
+- 09:00
+- 10:00
+- 11:00
+- 14:00
+- 15:00
+
+When a time slot is already booked, it is displayed as unavailable and cannot be selected again.
+
+Public Website URL
+------------------
+
+Doctor Dashboard
+----------------
+The doctor dashboard is available at:
+
+https://graceful-cassata-ad7143.netlify.app/admin.html
+
+The dashboard includes:
+
+- Secure doctor login using Supabase Authentication
+- Appointment list
+- Patient name, email, phone number, date, time, and message
+- Availability calendar
+- Green mode for available days
+- Red mode for unavailable days
+- Multiple date selection
+- Appointment status management
+- Automatic appointment refresh
+- Protection against duplicate status email notifications
+
+Appointment Statuses
+--------------------
+The doctor can set an appointment status to:
+
+- Yeni: New
+- Onaylandı: Confirmed
+- İptal edildi: Cancelled
+
+When an appointment is confirmed or cancelled, the patient receives an email notification in Turkish.
+
+Backend and Database
+--------------------
+The project uses Supabase for:
+
+- Authentication
+- Appointment storage
+- Doctor availability storage
+- Row Level Security
+- Duplicate appointment prevention
+- Booked time checking
+- Doctor dashboard data access
+
+Main database tables:
+
+- appointments
+- doctor_availability
+
+The appointments table stores:
+
+- Patient name
+- Patient email
+- Phone number
+- Appointment date
+- Appointment time
+- Patient message
+- Appointment status
+- Email notification status
+- Creation date
+
+The doctor_availability table stores:
+
+- Available date
+- Availability status
+- Creation date
+
+Email Notifications
+-------------------
+The project supports status email notifications through EmailJS from the doctor dashboard.
+
+When the doctor selects Onaylandı or İptal edildi, an email is sent to the email address entered by the patient.
+
+The EmailJS template uses these values:
+
+- {{to_email}}
+- {{patient_name}}
+- {{appointment_date}}
+- {{appointment_time}}
+- {{status_message}}
+- {{reply_to}}
+
+The email messages are written in Turkish and include the patient's name, appointment date, appointment time, and current status.
+
+Hosting
+-------
+The frontend is hosted on Netlify:
+
+https://graceful-cassata-ad7143.netlify.app/
+
+Netlify hosts the frontend files, including:
+
+- index.html
+- admin.html
+- script.js
+- admin.js
+- style.css
+- supabase-config.js
+- uploads/
+
+Supabase provides the backend services, authentication, database, and security policies.
+
+Local Development
+------------------
+To run the project locally, open PowerShell and use:
+
+cd "C:\Users\muham\OneDrive\سطح المكتب\koshan"
+py -m http.server 8000
+
+Then open:
+
+http://localhost:8000/
+http://localhost:8000/admin.html
+
+Deployment Note
+---------------
+Whenever frontend files are changed, the complete project folder should be redeployed to Netlify so the live website receives the latest version.
+
+The Supabase project remains connected to both the local website and the Netlify website, so appointments and availability are shared between both versions.
+
+Important Security Notes
+------------------------
+- The publishable Supabase key can be used in frontend files.
+- Never expose the Supabase service role key.
+- Never expose database passwords.
+- EmailJS public configuration is used by the doctor dashboard; private account credentials must never be added to frontend files.
+- The doctor dashboard is protected by Supabase Authentication.

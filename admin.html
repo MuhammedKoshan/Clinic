@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="tr">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Randevu Yönetimi | Dr. Muhammed Koşan</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+	<style>
+		.admin-page { min-height: 100vh; background: var(--pale); }
+		.admin-header { padding: 35px 0 20px; display: flex; align-items: center; justify-content: space-between; }
+		.admin-header h1 { margin: 0; font-size: 34px; }
+		.admin-panel { padding: 30px; background: #fff; border: 1px solid var(--line); }
+		.admin-form { display: grid; gap: 15px; max-width: 380px; }
+		.admin-form label { display: grid; gap: 6px; color: var(--muted); font-size: 12px; font-weight: 700; }
+		.admin-form input { padding: 12px; border: 1px solid var(--line); font: inherit; }
+		.admin-error { color: #b33b3b; font-size: 13px; }
+		.appointments-table { width: 100%; border-collapse: collapse; }
+		.appointments-table th, .appointments-table td { padding: 14px 10px; text-align: left; border-bottom: 1px solid var(--line); font-size: 13px; }
+		.appointments-table th { color: var(--muted); font-size: 10px; text-transform: uppercase; }
+		.status-select { padding: 7px; border: 1px solid var(--line); background: #fff; }
+		.delete-appointment { padding: 7px 10px; color: #a63232; border: 1px solid #db7777; background: #fff; font: inherit; font-size: 11px; font-weight: 700; cursor: pointer; }
+		.delete-appointment:hover { color: #fff; background: #a63232; }
+		.availability-form { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; margin-bottom: 28px; padding-bottom: 24px; border-bottom: 1px solid var(--line); }
+		.availability-form label { display: grid; gap: 6px; color: var(--muted); font-size: 12px; font-weight: 700; }
+		.availability-form input, .availability-form select { min-height: 43px; padding: 10px; border: 1px solid var(--line); background: #fff; font: inherit; }
+		.availability-error { width: 100%; margin: 0; color: #b33b3b; font-size: 13px; }
+		.availability-mode { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
+		.mode-button { padding: 10px 15px; border: 1px solid var(--line); background: #fff; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+		.mode-button.active-green { color: #176b4b; border-color: #55b98a; background: #e7f8ef; }
+		.mode-button.active-red { color: #a63232; border-color: #db7777; background: #fff0f0; }
+		#availability-calendar { min-width: 240px; cursor: pointer; }
+		.flatpickr-day.doctor-available { color: #176b4b; background: #d8f4e5; border-color: #55b98a; }
+		.flatpickr-day.doctor-unavailable { color: #a63232; background: #ffe0e0; border-color: #db7777; }
+		.availability-summary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin: 10px 0 35px; }
+		.availability-group { padding: 17px 20px; border: 1px solid var(--line); background: #fbfdfd; }
+		.availability-group h3 { margin: 0 0 10px; font: 700 14px 'Manrope', sans-serif; }
+		.availability-group.available h3 { color: #176b4b; }
+		.availability-group.unavailable h3 { color: #a63232; }
+		.availability-dates { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+		.availability-dates li { padding: 6px 9px; color: var(--muted); border: 1px solid var(--line); background: #fff; font-size: 12px; }
+		@media (max-width: 700px) { .admin-header { display: block; }.admin-header .button { margin-top: 18px; }.admin-panel { padding: 18px; overflow-x: auto; }.appointments-table { min-width: 720px; }.availability-summary { grid-template-columns: 1fr; } }
+	</style>
+</head>
+<body class="admin-page">
+	<main class="container">
+		<header class="admin-header"><div><p class="eyebrow"><span></span> Klinik paneli</p><h1>Randevular</h1></div><button class="button button-primary" id="logout-button" hidden>Çıkış yap</button></header>
+		<section class="admin-panel" id="login-panel">
+			<form class="admin-form" id="login-form"><h2>Doktor girişi</h2><label>E-posta <input type="email" name="email" required></label><label>Şifre <input type="password" name="password" required></label><button class="button button-primary" type="submit">Giriş yap <span>↗</span></button><p class="admin-error" id="login-error" hidden></p></form>
+		</section>
+		<section class="admin-panel" id="appointments-panel" hidden><h2>Müsaitlik takvimi</h2><div class="availability-mode"><button class="mode-button active-green" id="available-mode" type="button">Yeşil: Müsait günler</button><button class="mode-button" id="unavailable-mode" type="button">Kırmızı: Kapalı günler</button></div><form class="availability-form" id="availability-form"><label>Tarihleri seçin <input type="text" id="availability-calendar" autocomplete="off" placeholder="Takvimden tarih seçin"></label><button class="button button-primary" type="submit">Seçimleri kaydet <span>↗</span></button><p class="availability-error" id="availability-error" hidden></p></form><div class="availability-summary" id="availability-summary"></div><h2>Randevular</h2><p id="appointments-message">Yükleniyor...</p><table class="appointments-table"><thead><tr><th>Ad</th><th>E-posta</th><th>Telefon</th><th>Tarih</th><th>Saat</th><th>Mesaj</th><th>Durum</th><th>İşlem</th></tr></thead><tbody id="appointments-list"></tbody></table></section>
+	</main>
+	<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/tr.js"></script>
+	<script src="supabase-config.js"></script>
+	<script src="admin.js"></script>
+</body>
+</html>
